@@ -35,14 +35,13 @@ class CSVUploadController extends Controller
     
             $data = $this->csvUploadService->processCSV($filePath);
     
-            $pdfFilePath = $this->csvUploadService->generatePDFReport($data);
+            $pdfFileName = $this->csvUploadService->generatePDFReport($data);
     
-            $pdfLink = Storage::url($pdfFilePath);
     
             return response()->json([
                 'message' => 'CSV file uploaded and processed successfully!',
                 'file_path' => $filePath,
-                'pdf_link' => $pdfLink,
+                'pdf_link' =>  route('download.report', ['filename' => basename($pdfFileName)]),
             ], 200);
     
         // } catch (\Exception $e) {

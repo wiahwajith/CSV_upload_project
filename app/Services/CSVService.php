@@ -79,9 +79,11 @@ class CSVService
         $pdf = Pdf::loadView('reports.orders', compact('orders'))
             ->setPaper('a4', 'landscape');
 
-        $filePath = storage_path('app/reports/orders_report.pdf');
+        $uniqueFileName = 'orders_report_' . time() . '.pdf'; 
+        $filePath = storage_path('app/reports/' . $uniqueFileName);
+        
         $pdf->save($filePath);
 
-        return $filePath;
+        return $uniqueFileName;
     }
 }
