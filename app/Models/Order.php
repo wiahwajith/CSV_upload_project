@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'Integer';
     protected $fillable = ['id', 'customer_id' , 'order_date', 'total'];
     public function customer()
     {

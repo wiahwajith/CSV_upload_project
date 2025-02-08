@@ -23,13 +23,12 @@ class CSVUploadRepository implements CSVUploadRepositoryInterface
     
                 // Identify unique orders and associate with the customer
                 $order = Order::firstOrCreate(
-                    ['id' => 12233558],
+                    ['id' => $data['order_id']],
                     [
                         'customer_id' => $customer->id,
                         'order_date' => $data['order_date'],
                     ]
                 );
-                return dd([$order->id , $data['order_id']]);
                 // Identify unique products
                 $product = Product::firstOrCreate(
                     ['name' => $data['product_name']],
