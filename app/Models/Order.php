@@ -12,6 +12,8 @@ class Order extends Model
     public $incrementing = false;
     protected $keyType = 'Integer';
     protected $fillable = ['id', 'customer_id' , 'order_date', 'total'];
+    protected $casts = ['order_date' => 'datetime:Y-m-d'];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -29,7 +31,7 @@ class Order extends Model
     /**
      * An order has many order items.
      */
-    public function orderItems()
+    public function orderProducts()
     {
         return $this->hasMany(OrderProduct::class);
     }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -70,44 +71,17 @@ class CSVService
     
         return $entities;
     }
-    /**
-     * Generate a PDF report from the stored data.
-     *
-     * @param array $data
-     * @return string
-     */
+
     public function generatePDFReport($data)
     {
-        $pdf = new Dompdf();
+        $orders = $this->csvUploadInterface->getOrderData();
 
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        $pdf->setOptions($options);
+        $pdf = Pdf::loadView('reports.orders', compact('orders'))
+            ->setPaper('a4', 'landscape');
 
-        $html = '<h1>CSV Data Report</h1><table style="width: 100%; border: 1px solid black; border-collapse: collapse;">';
-        $html .= '<tr>';
-        foreach (array_keys($data[0]) as $column) {
-            $html .= "<th style='border: 1px solid black; padding: 5px;'>$column</th>";
-        }
-        $html .= '</tr>';
+        $filePath = storage_path('app/reports/orders_report.pdf');
+        $pdf->save($filePath);
 
-        foreach ($data as $row) {
-            $html .= '<tr>';
-            foreach ($row as $value) {
-                $html .= "<td style='border: 1px solid black; padding: 5px;'>$value</td>";
-            }
-            $html .= '</tr>';
-        }
-        $html .= '</table>';
-
-        $pdf->loadHtml($html);
-        $pdf->setPaper('A4', 'landscape');
-        $pdf->render();
-
-        $pdfFilePath = 'pdf_reports/report_' . time() . '.pdf';
-        Storage::put($pdfFilePath, $pdf->output());
-
-        return $pdfFilePath;
+        return $filePath;
     }
 }

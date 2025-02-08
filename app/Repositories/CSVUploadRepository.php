@@ -15,13 +15,12 @@ class CSVUploadRepository implements CSVUploadRepositoryInterface
     {
         DB::transaction(function () use ($entities) {
             foreach ($entities as $data) {
-                // Identify unique customers
+
                 $customer = Customer::firstOrCreate(
                     ['email' => $data['customer_email']],
                     ['name' => $data['customer_name']]
                 );
     
-                // Identify unique orders and associate with the customer
                 $order = Order::firstOrCreate(
                     ['id' => $data['order_id']],
                     [
@@ -29,23 +28,19 @@ class CSVUploadRepository implements CSVUploadRepositoryInterface
                         'order_date' => $data['order_date'],
                     ]
                 );
-                // Identify unique products
                 $product = Product::firstOrCreate(
                     ['name' => $data['product_name']],
                     ['price' => $data['product_price']]
                 );
-                // Insert into order_items to associate products with orders
                 $existingOrderItem = OrderProduct::where('order_id', $order->id)
                     ->where('product_id', $product->id)
                     ->first();
     
                 if ($existingOrderItem) {
-                    // If the product is already in the order, update the quantity and total price
                     $existingOrderItem->quantity += $data['quantity'];
                     $existingOrderItem->total_price += $data['quantity'] * $product->price;
                     $existingOrderItem->save();
                 } else {
-                    // Otherwise, create a new order item
                     OrderProduct::create([
                         'order_id' => $order->id,
                         'product_id' => $product->id,
@@ -77,5 +72,26 @@ class CSVUploadRepository implements CSVUploadRepositoryInterface
                 ];
             })
             ->toArray();
+    }
+
+    public function getOrderData()
+    {
+        return Order::with(['customer', 'orderProducts.product'])
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'order_id' => $order->id,
+                    'order_date' => $order->order_date->format('Y-m-d'),
+                    'customer_name' => $order->customer->name,
+                    'products' => $order->orderProducts->map(function ($orderProduct) {
+                        return [
+                            'product_name' => $orderProduct->product->name,
+                            'quantity' => $orderProduct->quantity,
+                            'total_price' => $orderProduct->total_price,
+                        ];
+                    }),
+                    'order_total' => $order->orderProducts->sum('total_price'),
+                ];
+            })->toArray();
     }
 }
