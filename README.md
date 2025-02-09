@@ -40,14 +40,80 @@ The application is built using **PHP 8.1** and follows the **Repository Design P
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-repo-url.git
-cd your-repo-name
+git clone https://github.com/wiahwajith/CSV_upload_project.git
+cd CSV_upload_project
+
+```
+
+## Step 2: Install Dependencies
+
+Install PHP dependencies using Composer:
+
+```bash
+composer install
+```
 
 
-## Security Vulnerabilities
+## Step 3: Configure Environment Variables
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Copy the `.env.example` file to `.env`:
 
-## License
+    ```bash
+    cp .env.example .env
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. Update the `.env` file with your database and application settings:
+
+    ```env
+    APP_NAME=Laravel
+    APP_URL=http://localhost
+
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=your_database_name
+    DB_USERNAME=your_database_user
+    DB_PASSWORD=your_database_password
+    ```
+
+
+## Step 4: Migrate the Database
+
+Run the following command to create the database tables:
+
+```bash
+php artisan migrate
+```
+``
+
+## Step 5: Start the Development Server
+
+Run the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+Visit the application in your browser:
+
+```
+http://localhost:8000
+```
+
+## Additional Notes
+
+- If you encounter permission issues, ensure the `storage` and `bootstrap/cache` directories are writable:
+
+    ```bash
+    chmod -R 775 storage bootstrap/cache
+    ```
+
+- For queue workers, set up Supervisor or use `php artisan queue:work`.
+
+- If you encounter missing dependencies, ensure you run `composer install` and `npm install` again.
+
+## csv file upload API (local)
+
+http://127.0.0.1:8000/api/upload-csv
+(No API Authentication)
+

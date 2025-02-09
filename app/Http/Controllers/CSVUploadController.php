@@ -30,7 +30,7 @@ class CSVUploadController extends Controller
     
         $file = $request->file('file');
     
-        // try {
+        try {
             $filePath = $this->csvUploadService->uploadCSV($file);
     
             $data = $this->csvUploadService->processCSV($filePath);
@@ -44,12 +44,12 @@ class CSVUploadController extends Controller
                 'pdf_link' =>  route('download.report', ['filename' => basename($pdfFileName)]),
             ], 200);
     
-        // } catch (\Exception $e) {
-        //     // Handle errors and exceptions
-        //     return response()->json([
-        //         'error' => 'An error occurred while processing the CSV file: ' . $e->getMessage(),
-        //     ], 500);
-        // }
+        } catch (\Exception $e) {
+            // Handle errors and exceptions
+            return response()->json([
+                'error' => 'An error occurred while processing the CSV file: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
 }
