@@ -52,46 +52,9 @@ class CSVUploadRepository implements CSVUploadRepositoryInterface
         });
     }
 
-    public function getDataForReport()
-    {
-        return Order::with(['customer', 'products'])
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'Order ID' => $order->id,
-                    'Customer Name' => $order->customer->name,
-                    'Customer Email' => $order->customer->email,
-                    'Order Date' => $order->order_date,
-                    'Products' => $order->products->map(function ($product) {
-                        return [
-                            'Product Name' => $product->name,
-                            'Product Price' => $product->price,
-                            'Quantity' => $product->pivot->quantity,
-                        ];
-                    }),
-                ];
-            })
-            ->toArray();
-    }
-
     public function getOrderData()
     {
         return Order::with(['customer', 'orderProducts.product'])
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'order_id' => $order->id,
-                    'order_date' => $order->order_date->format('Y-m-d'),
-                    'customer_name' => $order->customer->name,
-                    'products' => $order->orderProducts->map(function ($orderProduct) {
-                        return [
-                            'product_name' => $orderProduct->product->name,
-                            'quantity' => $orderProduct->quantity,
-                            'total_price' => $orderProduct->total_price,
-                        ];
-                    }),
-                    'order_total' => $order->orderProducts->sum('total_price'),
-                ];
-            })->toArray();
+            ->get();
     }
 }
